@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }}'s Photos - Image Uploader{% endblock %}
+
+{% block content %}
+
+<!-- Display Success/Error Messages if any -->
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert 
+           {% if message.tags == 'success' %}alert-success{% endif %}
+           {% if message.tags == 'error' %}alert-danger{% endif %}" 
+           role="alert">
+        {{ message }} <!-- Display message content -->
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<!-- Custom styles for viewing user photos -->
+<style>
+  body {
+    background-color: #f8f9fa; /* Light background for a clean look */
+  }
+
+  .cover-photo, .profile-photo {
+    width: 100%; /* Full width */
+    max-width: 100%; /* No overflow */
+    height: 300px; /* Fixed height for consistency */
+    background-color: #e9ecef; /* Light grey background */
+    display: flex; /* Flexbox layout */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    cursor: pointer; /* Pointer cursor on hover */
+    position: relative; /* Relative positioning for children */
+  }
+  .cover-photo img, .profile-photo img {
+    object-fit: cover; /* Scale image to fit container */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+  }
+  .timeline-photos {
+    margin-top: 30px;
+    display: grid; /* Use grid layout for photos */
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    gap: 10px; /* Space between photos */
+  }
+  .timeline-photos img {
+    width: 100%; /* Full width for each photo */
+    height: 200px; /* Set photo height */
+    object-fit: cover; /* Ensure the image fits the container */
+    cursor: pointer; /* Pointer cursor on hover */
+  }
+
+  /* Modal styles for viewing photos in a larger size */
+  .modal {
+    position: fixed; /* Fix the modal to the screen */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full screen width */
+    height: 100%; /* Full screen height */
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    display: flex; /* Flexbox to center content */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    display: none; /* Initially hidden */
+  }
+
+  .modal img {
+    max-width: 90%; /* Limit image width */
+    max-height: 90%; /* Limit image height */
+  }
+
+  .close-button {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 30px; /* Size of close button */
+    cursor: pointer; /* Pointer cursor for the close button */
+    z-index: 10; /* Ensure it stays on top */
+  }
+
+  /* Styling for section titles */
+  .section-title {
+    margin-top: 30px;
+    font-weight: bold; /* Bold text */
+    font-size: 24px; /* Font size for section titles */
+  }
+</style>
+
+<!-- Main content for user photos -->
+<div class="container-fluid mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <!-- Display the username's photo gallery -->
+      <h2 class="text-center">{{ user.username|capfirst }}'s Photos</h2>
+
+      <!-- Cover Photo Section -->
+      <h3 class="section-title">Cover Photos</h3>
+      <div class="timeline-photos">
+        {% if cover_photos %}
+          {% for photo in cover_photos %}
+            <img src="{{ photo.cover_picture.url }}" onclick="viewImage('{{ photo.cover_picture.url }}')" /> <!-- Display each cover photo -->
+          {% endfor %}
+        {% else %}
+          <p>No cover photos uploaded.</p> <!-- Fallback message if no cover photos -->
+        {% endif %}
+      </div>
+
+      <!-- Profile Photo Section -->
+      <h3 class="section-title">Profile Photos</h3>
+      <div class="timeline-photos">
+        {% if profile_photos %}
+          {% for photo in profile_photos %}
+            <img src="{{ photo.profile_picture.url }}" onclick="viewImage('{{ photo.profile_picture.url }}')" /> <!-- Display each profile photo -->
+          {% endfor %}
+        {% else %}
+          <p>No profile photos uploaded.</p> <!-- Fallback message if no profile photos -->
+        {% endif %}
+      </div>
+
+      <!-- Timeline  Photo Section -->
+      <div class="timeline-section mt-5">
+        <h3 class="section-title">{{ user.username|capfirst }}'s Timeline Photos</h3>
+        <div class="timeline-photos">
+          {% for photo in all_timeline_photos %}
+            <img src="{{ photo.timeline_picture.url }}" onclick="viewImage('{{ photo.timeline_picture.url }}')" /> <!-- Display each timeline photo -->
+          {% endfor %}
+        </div>
+        {% if not all_timeline_photos %}
+          <p class="mt-3 text-danger">No timeline photos uploaded.</p> <!-- Fallback message if no timeline photos -->
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript function for viewing a photo in a modal -->
+<script>
+  function viewImage(imageUrl) {
+    const modal = document.createElement('div'); // Create modal container
+    modal.className = 'modal';
+    
+    const img = document.createElement('img'); // Create image element for modal
+    img.src = imageUrl;
+
+    const closeButton = document.createElement('span'); // Create close button
+    closeButton.className = 'close-button';
+    closeButton.innerHTML = '&times;'; // X' symbol for closing the modal
+    closeButton.onclick = function() {
+      document.body.removeChild(modal); // Remove modal when close button is clicked
+    };
+
+    modal.appendChild(closeButton); // Add close button to modal
+    modal.appendChild(img); // Add image to modal
+    document.body.appendChild(modal); // Append modal to body
+    modal.style.display = 'flex'; // Show the modal
+
+    // Close modal on clicking outside the image
+    modal.onclick = function(event) {
+      if (event.target === modal) {
+        document.body.removeChild(modal); // Remove modal on clicking outside the image
+      }
+    };
+  }
+</script>
+
+{% endblock %}
