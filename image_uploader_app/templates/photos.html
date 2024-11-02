@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+
+{% block title %}Photos - Image Uploader{% endblock %}
+
+{% block content %}
+
+<!-- Display Success/Error Messages if any -->
+{% if messages %}
+  <div class="container mt-3">
+    <!-- Loop through all messages and display them -->
+    {% for message in messages %}
+      <div class="alert 
+           {% if message.tags == 'success' %}alert-success{% endif %}
+           {% if message.tags == 'error' %}alert-danger{% endif %}" 
+           role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<!-- Container for uploaded photos sections -->
+<div class="container">
+    <!-- Section Title for Uploaded Photos -->
+    <h2 class="page-title">Your Uploaded Photos</h2>
+
+    <!--  Section for Cover Photos -->
+    <div class="photos-section">
+        <h3 class="section-title">Cover Photos</h3>
+        {% if cover_photos %}
+            <!-- Display grid of cover photos if available -->
+            <div class="photo-grid">
+                {% for photo in cover_photos %}
+                    <div class="photo-item">
+                        <!-- Display cover photo -->
+                        <img src="{{ photo.cover_picture.url }}" alt="Cover photo" onclick="viewImage('{{ photo.cover_picture.url }}')">
+                        <!-- Form to delete the cover photo -->
+                        <form method="POST" action="{% url 'delete_photo' user.username 'cover' photo.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Message if no cover photos are available -->
+            <p>No cover photos uploaded yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Section for Profile Photos -->
+    <div class="photos-section">
+        <h3 class="section-title">Profile Photos</h3>
+        {% if profile_photos %}
+            <!-- Display grid of profile photos if available -->
+            <div class="photo-grid">
+                {% for photo in profile_photos %}
+                    <div class="photo-item">
+                        <!-- Display profile photo -->
+                        <img src="{{ photo.profile_picture.url }}" alt="Profile photo" onclick="viewImage('{{ photo.profile_picture.url }}')">
+                        <!-- Form to delete the profile photo -->
+                        <form method="POST" action="{% url 'delete_photo' user.username 'profile' photo.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Message if no profile photos are available -->
+            <p>No profile photos uploaded yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Section for Timeline Photos -->
+    <div class="photos-section">
+        <h3 class="section-title">Timeline Photos</h3>
+        {% if timeline_photos %}
+            <!-- Display grid of timeline photos if available -->
+            <div class="photo-grid">
+                {% for photo in timeline_photos %}
+                    <div class="photo-item">
+                        <!-- Display timeline photo -->
+                        <img src="{{ photo.timeline_picture.url }}" alt="Timeline photo" onclick="viewImage('{{ photo.timeline_picture.url }}')">
+                        <!-- Form to delete the timeline photo -->
+                        <form method="POST" action="{% url 'delete_photo' user.username 'timeline' photo.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Message if no timeline photos are available -->
+            <p>No timeline photos uploaded yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript function for viewing a photo in a modal -->
+<script>
+    function viewImage(imageUrl) {
+      const modal = document.createElement('div'); // Create modal container
+      modal.className = 'modal';
+      
+      const img = document.createElement('img'); // Create image element for modal
+      img.src = imageUrl;
+  
+      const closeButton = document.createElement('span'); // Create close button
+      closeButton.className = 'close-button';
+      closeButton.innerHTML = '&times;'; // 'X' symbol for closing the modal
+      closeButton.onclick = function() {
+        document.body.removeChild(modal); // Remove modal when close button is clicked
+      };
+  
+      modal.appendChild(closeButton); // Add close button to modal
+      modal.appendChild(img); // Add image to modal
+      document.body.appendChild(modal); // Append modal to body
+      modal.style.display = 'flex'; // Show the modal
+  
+      // Close modal on clicking outside the image
+      modal.onclick = function(event) {
+        if (event.target === modal) {
+          document.body.removeChild(modal); // Remove modal on clicking outside the image
+        }
+      };
+    }
+  </script>
+
+<!-- Custom styles for the photo grid layout -->
+<style>
+    /* Container styling for photo sections */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Title of the page */
+    .page-title {
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2rem;
+        color: #333;
+    }
+
+    /* Styling for individual photo sections */
+    .photos-section {
+        margin-bottom: 50px;
+    }
+
+    /* Section title styling */
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #555;
+    }
+
+    /* Grid layout for photos */
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    /* Individual photo item styling */
+    .photo-item {
+        position: relative;
+        border: 1px solid #ddd;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        transition: box-shadow 0.3s ease;
+    }
+
+    /* Hover effect for photo items */
+    .photo-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Image styling for photos */
+    .photo-item img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    /* Center-align the delete button */
+    .photo-item form {
+        text-align: center;
+    }
+
+    /* Small button styling */
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.875rem;
+    }
+
+    /* Styling for delete button */
+    .btn-danger {
+        background-color: #ff4d4f;
+        border-color: #ff4d4f;
+        color: white;
+    }
+
+    /* Hover effect for delete button */
+    .btn-danger:hover {
+        background-color: #e64546;
+        border-color: #e64546;
+    }
+
+    /* Modal styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      display: none;
+    }
+    .modal img {
+      max-width: 90%;
+      max-height: 90%;
+    }
+    .close-button {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      z-index: 10;
+    }
+</style>
+{% endblock %}

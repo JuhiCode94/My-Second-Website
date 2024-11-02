@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Image Uploader{% endblock %}
+
+{% block content %}
+
+<!-- Display success/error messages if any exist -->
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert 
+           {% if message.tags == 'success' %}alert-success{% endif %}
+           {% if message.tags == 'error' %}alert-danger{% endif %}" 
+           role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<style>
+  /* Custom styles for the Home page */
+
+  /* Background color for body */
+  body {
+    background-color: #f8f9fa; /* Light grey background */
+  }
+
+  /* Responsive cover photo */
+  .cover-photo {
+    width: 100%; /* Full width of the container */
+    max-width: 100%; /* Ensures no overflow */
+    height: 300px; /* Fixed height for cover photo */
+    background-color: #e9ecef; /* Light background color */
+    display: flex;  /* Flexbox for centering content */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    cursor: pointer; /* Pointer cursor on hover */
+    position: relative; /* Positioned for absolute children */
+  }
+
+  /* Make the cover image fill the area */
+  .cover-photo img {
+    object-fit: cover; /* Cover the area without distortion */
+    width: 100%; /* Full width of parent */
+    height: 100%; /* Full height of parent */
+  }
+
+  /* Text overlay for cover photo */
+  .cover-photo-text {
+    font-size: 1.3rem; /* Font size for overlay text */
+    color: #6c757d; /* Grey color for text */
+    position: absolute; /* Positioned over the photo */
+    text-align: center; /* Centered text */
+  }
+
+  /* Circular profile photo */
+  .profile-photo {
+    width: 150px; /* Fixed width */
+    height: 150px; /* Fixed height */
+    background-color: #dee2e6; /* Light background color */
+    border-radius: 50%; /* Circular shape */
+    display: flex; /* Flexbox for centering content */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    cursor: pointer; /* Pointer cursor on hover */
+    margin-top: -75px; /* Pull up into the cover photo */
+    overflow: hidden; /* Prevent overflow of image */
+    border: 5px solid white; /* White border around the photo */
+    position: relative; /* Positioned for absolute children */
+  }
+
+  /* Profile photo image styling */
+  .profile-photo img {
+    object-fit: cover; /* Cover the area without distortion */
+    width: 100%; /* Full width of parent */
+    height: 100%; /* Full height of parent */
+  }
+
+  /* Text overlay for profile photo */
+  .profile-photo-text {
+    font-size: 1rem; /* Font size for overlay text */
+    color: #6c757d; /* Grey color for text */
+    position: absolute; /* Positioned over the photo */
+    text-align: center; /* Centered text */
+  }
+
+  /* Hidden input for file upload */
+  .upload-input {
+    display: none; /* Hidden by default */
+  }
+
+  /* Custom button styling */
+  .btn-custom {
+    background-color: #28a745; /* Green background color */
+    border: none; /* No border */
+    border-radius: 25px; /* Rounded corners */
+    font-size: 1.2rem; /* Larger font size */
+    margin-top: 20px; /* Margin above the button */
+  }
+
+  /* Change button color on hover */
+  .btn-custom:hover {
+    background-color: #218838; /* Darker green on hover */
+  }
+
+  /* Timeline photos grid layout */
+  .timeline-photos {
+    margin-top: 30px; /* Space above the grid */
+    display: grid; /* Use CSS grid layout */
+    grid-template-columns: repeat(3, 1fr); /* Three columns */
+    gap: 10px; /* Space between grid items */
+  }
+
+  /* Timeline photos styling */
+  .timeline-photos img {
+    width: 100%; /* Full width of parent */
+    height: 200px; /* Fixed height */
+    object-fit: cover; /* Cover the area without distortion */
+  }
+</style>
+
+<!-- Main content: upload and display photos -->
+<div class="container-fluid mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <!-- Cover Photo Upload Section -->
+      <form method="POST" enctype="multipart/form-data" id="coverPhotoForm">
+        {% csrf_token %}
+        <div class="cover-photo" id="coverPhoto" onclick="document.getElementById('coverInput').click();">
+          <!-- Show existing cover photo if available, otherwise prompt upload -->
+          {% if latest_cover_photo %}
+              <img id="coverPreview" src="{{ latest_cover_photo.cover_picture.url }}" />
+          {% else %}
+              <div class="cover-photo-text" id="coverPhotoText">Click to upload your cover photo</div>
+              <img id="coverPreview" style="display:none;" />
+          {% endif %}
+          <input type="file" id="coverInput" name="cover_picture" class="upload-input" accept="image/*" onchange="loadCoverPhoto(event)">
+        </div>
+      </form>
+
+      <!-- Profile Photo Upload Section -->
+      <form method="POST" enctype="multipart/form-data" id="profilePhotoForm">
+        {% csrf_token %}
+        <div class="profile-photo mx-auto" id="profilePhoto" onclick="document.getElementById('profileInput').click();">
+          <!-- Show existing profile photo if available, otherwise prompt upload -->
+          {% if latest_profile_photo %}
+              <img id="profilePreview" src="{{ latest_profile_photo.profile_picture.url }}" />
+          {% else %}
+              <div class="profile-photo-text" id="profilePhotoText">Click to upload your profile picture</div>
+              <img id="profilePreview" style="display:none;" />
+          {% endif %}
+          <input type="file" id="profileInput" name="profile_picture" class="upload-input" accept="image/*" onchange="loadProfilePhoto(event)">
+        </div>
+      </form>
+
+      <!-- Description -->
+      <div class="text-center mt-5">
+        <h4>Share Your Amazing Photos!</h4>
+        <p>Upload a cover photo, profile picture, and add your favorite moments to your timeline below.</p>
+      </div>
+
+      <!-- Timeline Photos Section -->
+      <form method="POST" enctype="multipart/form-data" id="timelinePhotoForm">
+        {% csrf_token %}
+         
+        <div class="timeline-upload text-center mt-5">
+            <h5>Upload a Photo to Your Timeline</h5>
+            <button type="button" class="btn btn-custom" onclick="document.getElementById('timelineInput').click();">Upload Photo</button>
+            <input type="file" id="timelineInput" name="timeline_picture" class="upload-input" accept="image/*" onchange="loadTimelinePhoto(event)">
+            <input type="hidden" name="timeline_photo"> <!-- Hidden field for form submission -->
+        </div>
+      </form>
+
+      <!-- Timeline Photos Section -->
+      <div class="timeline-photos mt-4">
+        {% for photo in all_timeline_photos %}
+            <img src="{{ photo.timeline_picture.url }}" alt="Timeline photo" />
+        {% endfor %}
+      </div>
+
+      <!-- Timeline Photos -->
+      <div class="timeline-photos" id="timeline">
+        <!-- Uploaded photos will appear here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Function to load and preview the cover photo
+  function loadCoverPhoto(event) {
+    var coverPreview = document.getElementById('coverPreview');
+    var coverText = document.getElementById('coverPhotoText');
+    coverPreview.src = URL.createObjectURL(event.target.files[0]); // Create URL for preview
+    coverPreview.style.display = 'block'; // Show the preview
+    if (coverText) coverText.style.display = 'none'; // Hide the text prompt if an image is loaded
+    
+    // Automatically submit the form after selecting the image
+    document.getElementById('coverPhotoForm').submit();
+  }
+
+  // Function to load and preview the profile photo
+  function loadProfilePhoto(event) {
+    var profilePreview = document.getElementById('profilePreview');
+    var profileText = document.getElementById('profilePhotoText');
+    profilePreview.src = URL.createObjectURL(event.target.files[0]); // Create URL for preview
+    profilePreview.style.display = 'block'; // Show the preview
+    if (profileText) profileText.style.display = 'none'; // Hide the text prompt if an image is loaded
+    
+    // Automatically submit the form after selecting the image
+    document.getElementById('profilePhotoForm').submit();
+  }
+
+  // Function to load and preview the timeline photo
+  function loadTimelinePhoto(event) {
+    var timelinePreview = document.createElement('img'); // Create new image element
+    timelinePreview.src = URL.createObjectURL(event.target.files[0]); // Create URL for preview
+    timelinePreview.style.width = '100%'; // Full width of parent
+    timelinePreview.style.height = '200px'; // Fixed height
+    timelinePreview.style.objectFit = 'cover'; // Cover the area
+    
+    var timelineContainer = document.querySelector('.timeline-photos');
+    timelineContainer.appendChild(timelinePreview); // Append to the timeline section
+    
+    // Automatically submit the form after selecting the image
+    document.getElementById('timelinePhotoForm').submit();
+  }
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome - Image Uploader{% endblock %}
+
+<!-- Override navbar block to exclude navbar for the welcome page -->
+{% block navbar %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5" style="margin: 0; padding: 0;">
+  <div class="row" style="margin: 0;"> <!-- Removed h-100 class -->
+    <div class="col-md-6 d-flex flex-column align-items-start justify-content-start" style="padding: 20px;">
+      <h1 class="website-name">Image Uploader</h1>
+      <blockquote class="mt-3" style="font-size: 1.5rem; color: #555;">
+        "Upload your memories and let them shine!"
+      </blockquote>
+    </div>
+    
+    <div class="col-md-6 d-flex align-items-center justify-content-center">
+      <div class="welcome-container">
+        <!-- Display messages if there are any -->
+        {% if messages %}
+        <div class="alert alert-danger" role="alert">
+          {% for message in messages %}
+            {{ message }}<br>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Login Form -->
+         <form method="POST" action="{% url 'login' %}">
+          {% csrf_token %}
+          <input type="text" name="username" class="form-control" placeholder="Enter your username" required>
+          <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+          <button type="submit" class="btn btn-success w-100" style="border-radius: 5px;">Login</button>
+        </form>
+
+        <div class="mt-3">
+          <a href="{% url 'forgot_password' %}" class="btn btn-light" style="color: #28a745;">Forgot Password?</a>
+        </div>
+
+        <div class="mt-3">
+          <a href="{% url 'create_account' %}" class="btn btn-outline-success w-100" style="border-radius: 5px;">Create New Account</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+  <style>
+    body {
+      background-color: #f0f0f0; /* Set light grey background color */
+      margin: 0; /* Remove body margin */
+      padding: 0; /* Remove body padding */
+      min-height: 100vh; /* Ensure body takes full viewport height */
+    }
+    .website-name {
+      font-size: 4rem; /* Large font size for website name */
+      font-weight: bold; /* Bold text */
+      color: #fff; /* White text color*/
+      margin: 0; /* Remove margin */
+      text-align: left; /* Align text to the left */
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); /* Shadow for 3D effect */
+      background: linear-gradient(135deg, #28a745, #68d5b1); /* Gradient background */
+      padding: 10px; /* Padding around the website name */
+      border-radius: 5px; /* Rounded corners */
+      width: 100%; /* Take full width */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Outer shadow for depth */
+    }
+    .welcome-container {
+      background-color: #fff; /* White background for the container */
+      padding: 40px; /* Padding inside the container */
+      border-radius: 10px; /* Rounded corners */
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+      text-align: center; /* Center text */
+      width: 100%; /* Full width */
+      max-width: 400px; /* Max width for the container */
+      overflow: hidden; /* Changed from auto to hidden */
+      margin-bottom: 20px; /* Add bottom margin to the container */
+    }
+    .form-control {
+      margin-bottom: 15px; /* Space between form fields */
+      border: 2px solid #28a745; /* Green border for input fields */
+      border-radius: 5px; /* Rounded corners */
+      padding: 10px; /* Padding inside the input fields */
+    }
+    .form-control:focus {
+      border-color: #68d5b1; /* Light green border on focus */
+      box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); /* Shadow on focus */
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .website-name {
+        font-size: 3rem;
+        text-align: center; /* Center-align text on small screens */
+      }
+      .welcome-container {
+        padding: 20px;
+        max-width: 90%; /* Make container wider on smaller screens */
+      }
+    }
+
+    @media (max-width: 576px) {
+      .website-name {
+        font-size: 2.5rem;
+      }
+      .welcome-container {
+        padding: 15px;
+      }
+    }
+  </style>
+{% endblock %}

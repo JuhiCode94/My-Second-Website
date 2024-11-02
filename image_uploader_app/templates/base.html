@@ -1,0 +1,197 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favicon for browser tab -->
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+
+    <!-- Title block allows child templates to specify their own page title -->
+    <title>{% block title %}Image Uploader{% endblock %}</title>
+
+    <!-- Bootstrap CSS for responsive layout and styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Page-specific styles block for custom styles in child templates -->
+    {% block extra_styles %}{% endblock %}
+    
+    <style>
+      /* Ensure the body and html fill the full height of the screen */
+      html, body {
+        height: 100%; /* Make sure the body takes full height */
+        margin: 0; /* Remove default margin */
+        display: flex; /* Use flexbox for layout */
+        flex-direction: column; /* Use a vertical layout */
+      }
+
+      /* Default background color */
+      body {
+          background-color: #f8f9fa;
+      }
+
+      /* Flexbox ensures the content fills available space */
+      .content {
+          flex: 1; /* Allow this to grow */
+          display: flex;
+          justify-content: center;
+          align-items: center; /* Center content vertically and horizontally */
+      }
+
+      /* Customize the navbar's bottom border */
+      .navbar-custom {
+        border-bottom: 1px solid #28a745; /* Change color as needed */
+      }
+
+      /* Small green bar below the navbar to enhance the design */
+      .navbar-divider {
+        height: 4px;
+        background-color: #28a745; /* Green color */
+        margin-top: -3px; /* Adjust based on border thickness */
+      }
+
+      /* Hide the file input (used in the upload form) */
+      .upload-input {
+        display: none;
+      }
+
+      /* User logo styling: circle with gradient background */
+      .user-logo {
+        background: linear-gradient(135deg, #28a745, #68d5b1); /* Gradient background */
+        color: white; /* Text color */
+        width: 34px; /* Circle width */
+        height: 34px; /* Circle height */
+        border-radius: 50%; /* Make it a circle */
+        font-size: 14px; /* Font size for initials */
+        font-weight: bold; /* Bold font */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-transform: uppercase; /* Ensure the text is uppercase */
+      }
+
+      /* Space between the search form and the user logo */
+        .search-form {
+          margin-bottom: 10px; /* Adjust the space between the search area and the logo */
+        }
+        
+        /* Padding for better spacing between navbar elements */
+        .navbar-custom .dropdown {
+          padding-left: 10px; /* Adds space to the left of the dropdown (user logo) */
+        }
+
+        /* Responsive design for smaller screens (less than 991px wide) */
+        @media (max-width: 991.98px) {
+          /* Adjust for smaller devices */
+          .navbar-collapse {
+            display: flex;
+            justify-content: space-between; /* Space out navbar elements */
+          }
+  
+          .search-form {
+            width: 100%; /* Search form takes full width */
+          }
+        }
+  
+        /* Responsive design for very small screens (less than 575px wide) */
+        @media (max-width: 575.98px) {
+          .navbar-collapse {
+            flex-direction: column; /* Stack elements vertically */
+          }
+  
+          .search-form {
+            order: 2; /* Move search form below user logo */
+            margin-top: 10px; /* Add some space on top */
+          }
+  
+          .dropdown {
+            order: 1; /* Move dropdown (user logo) above search form */
+          }
+        }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar section, which child templates can override if needed -->
+    {% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light navbar-custom">
+      <div class="container-fluid">
+
+        <!-- Brand link (Logo or Title) -->
+        <a class="navbar-brand" href="#">Image Uploader</a>
+        <!-- Toggler for small screens -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Collapsible navbar content -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <!-- Link to Home page -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'home' username=request.session.logged_in_username %}">Home</a>
+            </li>
+            <!-- Link to Photos page -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'photos' username=request.session.logged_in_username %}">Photos</a>
+            </li>
+            <!-- Link to Profile Details page -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'profile_details' username=request.session.logged_in_username %}">Profile Details</a>
+            </li>
+          </ul>
+
+          <!-- Search form in the navbar to search for users -->
+          <form class="d-flex search-form" method="GET" action="{% url 'search_user' %}">
+            <input class="form-control me-2" type="search" name="username" placeholder="Search for a user" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
+          
+          <!-- User dropdown for profile access and logout -->
+          <div class="dropdown ms-auto">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <!-- User logo displaying first two initials of the username -->
+              <div class="rounded-circle user-logo d-flex justify-content-center align-items-center">
+                {{ request.session.logged_in_username|slice:":2" }} <!-- Display the first two initials of the username -->
+              </div>
+            </a>
+            <!-- Dropdown menu for profile and logout options -->
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <!-- "Your Profile" option -->
+              <li>
+                <a class="dropdown-item" href="{% url 'home' username=request.session.logged_in_username %}">Your Profile</a>
+              </li>
+              
+              <!-- Divider between options -->
+              <li><hr class="dropdown-divider"></li>
+              
+              <!-- "Logout" option -->
+              <li>
+                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+    {% endblock %}
+
+    <!-- Main content section (to be overridden by child templates) -->
+    <div class="container-fluid p-0">
+      {% block content %} {% endblock %}
+    </div>
+
+    <!-- Footer with basic branding -->
+    <footer class="bg-light text-center text-lg-start mt-5">
+      <div class="text-center p-3">
+        © 2024 Image Uploader
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS for components like dropdowns -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Page-specific Scripts block for custom JS in child templates -->
+    {% block extra_scripts %}{% endblock %}
+  </body>
+</html>
