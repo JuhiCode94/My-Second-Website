@@ -38,7 +38,7 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
     python manage.py migrate
     ```
 
-### Prerequisites
+## Technologies Used
 
 - **Python**: 3.11.4
 - **Django**: 5.0.6
