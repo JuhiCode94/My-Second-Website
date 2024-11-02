@@ -2,7 +2,7 @@
 
 ![Logo](static/img/favicon.ico)
 
-This is a Django-based application for uploading and managing images. Users can upload cover pictures, profile pictures, and timeline images while enjoying a responsive and user-friendly interface.
+This is a Django-based application for uploading and managing images. Users can upload cover pictures, profile pictures, and timeline images while enjoying a responsive and user-friendly interface. Additionally, users can view other users' uploaded photos, fostering a community experience.
 
 ## Table of Contents
 - [Features](#features)
