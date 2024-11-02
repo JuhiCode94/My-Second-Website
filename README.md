@@ -58,7 +58,7 @@ This is a Django-based application for uploading and managing images. Users can 
 - **Photos Page:** `http://127.0.0.1:8000/photos/`
 - **Profile-Details Page:** `http://127.0.0.1:8000/profile_details/`
 - **User Page:** `http://127.0.0.1:8000/user/`
-- **User-Photos Page:** `http://127.0.0.1:8000/user/praveen/photos/`
+- **User-Photos Page:** `http://127.0.0.1:8000/user/photos/`
 
 #### Admin Panel
 
