@@ -106,6 +106,7 @@ image_uploader/
 ├── manage.py
 └── requirements.txt
 
+```
 ## Docker
 
 Docker support is available for this project. For detailed instructions on how to build and run the application using Docker, please refer to the [Docker-specific README](README.Docker.md).
