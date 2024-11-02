@@ -27,15 +27,11 @@ This is a Django-based application for uploading and managing images. Users can 
 
 **Install the required packages:**
 
-    ```
     pip install -r requirements.txt
-    ```
 
 **Apply migrations:**
 
-    ```
     python manage.py migrate
-    ```
 
 ### Technologies Used
 
@@ -47,9 +43,7 @@ This is a Django-based application for uploading and managing images. Users can 
 
 **Run the development server:**
 
-    ```sh
     python manage.py runserver
-    ```
 
 **Open your browser and navigate to:** `http://127.0.0.1:8000`
 
