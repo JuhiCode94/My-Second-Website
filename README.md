@@ -22,7 +22,7 @@ This is a Django-based application for uploading and managing images. Users can 
 
 **Create a virtual environment and activate it:**
 
-```bash
+```
 python -m venv venv
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 
