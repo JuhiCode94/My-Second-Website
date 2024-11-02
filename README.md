@@ -22,9 +22,10 @@ This is a Django-based application for uploading and managing images. Users can 
 
 **Create a virtual environment and activate it:**
 
-```
-python -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
 
 **Install the required packages:**
 
@@ -38,7 +39,7 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
     python manage.py migrate
     ```
 
-## Technologies Used
+### Technologies Used
 
 - **Python**: 3.11.4
 - **Django**: 5.0.6
@@ -76,6 +77,7 @@ Access the admin panel at `http://127.0.0.1:8000/admin` with the following crede
 
 ### Project Structure
 
+```plaintext
 image_uploader/
 ├── image_uploader_app/
 │   ├── migrations/
